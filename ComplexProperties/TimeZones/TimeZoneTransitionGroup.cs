@@ -124,10 +124,7 @@ namespace Microsoft.Exchange.WebServices.Data
                 // If the time zone info doesn't support Daylight Saving Time, we just need to
                 // create one transition to one group with one transition to the standard period.
                 TimeZonePeriod standardPeriodToSet = new TimeZonePeriod();
-                standardPeriodToSet.Id = string.Format(
-                    "{0}/{1}",
-                    standardPeriod.Id,
-                    adjustmentRule.DateStart.Year);
+                standardPeriodToSet.Id = $"{standardPeriod.Id}/{adjustmentRule.DateStart:yyyyMMdd}";
                 standardPeriodToSet.Name = standardPeriod.Name;
                 standardPeriodToSet.Bias = standardPeriod.Bias;
                 this.timeZoneDefinition.Periods.AddOrUpdate(standardPeriodToSet.Id, standardPeriodToSet);
@@ -140,10 +137,7 @@ namespace Microsoft.Exchange.WebServices.Data
                 TimeZonePeriod daylightPeriod = new TimeZonePeriod();
 
                 // Generate an Id of the form "Daylight/2008"
-                daylightPeriod.Id = string.Format(
-                    "{0}/{1}",
-                    TimeZonePeriod.DaylightPeriodId,
-                    adjustmentRule.DateStart.Year);
+                daylightPeriod.Id = $"{TimeZonePeriod.DaylightPeriodId}/{adjustmentRule.DateStart:yyyyMMdd}";
                 daylightPeriod.Name = TimeZonePeriod.DaylightPeriodName;
                 daylightPeriod.Bias = standardPeriod.Bias - adjustmentRule.DaylightDelta;
 
@@ -155,10 +149,7 @@ namespace Microsoft.Exchange.WebServices.Data
                     adjustmentRule.DaylightTransitionStart);
 
                 TimeZonePeriod standardPeriodToSet = new TimeZonePeriod();
-                standardPeriodToSet.Id = string.Format(
-                    "{0}/{1}",
-                    standardPeriod.Id,
-                    adjustmentRule.DateStart.Year);
+                standardPeriodToSet.Id = $"{standardPeriod.Id}/{adjustmentRule.DateStart:yyyyMMdd}";
                 standardPeriodToSet.Name = standardPeriod.Name;
                 standardPeriodToSet.Bias = standardPeriod.Bias;
                 this.timeZoneDefinition.Periods.AddOrUpdate(standardPeriodToSet.Id, standardPeriodToSet);
