@@ -40,10 +40,11 @@ namespace Microsoft.Exchange.WebServices.Data
         /// Create a new instance of <see cref="EwsHttpWebRequest"/>.
         /// </summary>
         /// <param name="uri">The service URI.</param>
+        /// <param name="ignoreCertificate">ignore server certificate error</param>
         /// <returns>An instance of <see cref="IEwsHttpWebRequest"/>./// </returns>
-        IEwsHttpWebRequest IEwsHttpWebRequestFactory.CreateRequest(Uri uri)
+        IEwsHttpWebRequest IEwsHttpWebRequestFactory.CreateRequest(Uri uri, bool ignoreCertificate)
         {
-            return new EwsHttpWebRequest(uri);
+            return new EwsHttpWebRequest(uri, ignoreCertificate);
         }
 
         /// <summary>

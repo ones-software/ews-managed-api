@@ -83,6 +83,7 @@ namespace Microsoft.Exchange.WebServices.Data
         private TraceFlags traceFlags = TraceFlags.All;
         private ITraceListener traceListener = new EwsTraceListener();
         private bool preAuthenticate;
+        private bool ignoreCertificate;
         private string userAgent = ExchangeService.defaultUserAgent;
         private bool acceptGzipEncoding = true;
         private bool keepAlive = true;
@@ -141,7 +142,7 @@ namespace Microsoft.Exchange.WebServices.Data
                 throw new ServiceLocalException(string.Format(Strings.UnsupportedWebProtocol, url.Scheme));
             }
 
-            IEwsHttpWebRequest request = this.HttpWebRequestFactory.CreateRequest(url);
+            IEwsHttpWebRequest request = this.HttpWebRequestFactory.CreateRequest(url, this.IgnoreCertificate);
             try
             {
 
@@ -798,6 +799,15 @@ namespace Microsoft.Exchange.WebServices.Data
         {
             get { return this.preAuthenticate; }
             set { this.preAuthenticate = value; }
+        }
+
+        /// <summary>
+        /// Ignore certificate
+        /// </summary>
+        public bool IgnoreCertificate
+        {
+            get { return this.ignoreCertificate; }
+            set { this.ignoreCertificate = value; }
         }
 
         /// <summary>

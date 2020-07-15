@@ -23,6 +23,9 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+
 namespace Microsoft.Exchange.WebServices.Autodiscover
 {
     using System;
@@ -1513,7 +1516,6 @@ namespace Microsoft.Exchange.WebServices.Autodiscover
             if (this.HttpHeaders.Count > 0)
                 this.HttpHeaders.ForEach((kv) => request.Headers.Add(kv.Key, kv.Value));
             this.HttpResponseHeaders.Clear();
-
             return request;
         }
 
@@ -1526,6 +1528,10 @@ namespace Microsoft.Exchange.WebServices.Autodiscover
                 CookieContainer = this.CookieContainer,
                 UseDefaultCredentials = this.UseDefaultCredentials,
             };
+            if (this.IgnoreCertificate)
+            {
+                httpClientHandler.ServerCertificateCustomValidationCallback = EwsHttpWebRequest.ServerCertificateCustomValidationCallback;
+            }
 
             if (this.WebProxy != null)
             {
@@ -1543,7 +1549,8 @@ namespace Microsoft.Exchange.WebServices.Autodiscover
 
 #if NETSTANDARD2_0
                 // Temporary fix for authentication on Linux platform
-                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                // fix run time error for null url
+                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && url != null)
                     serviceCredentials = AdjustLinuxAuthentication(url, serviceCredentials);
 #endif
 

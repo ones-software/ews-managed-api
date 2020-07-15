@@ -5116,9 +5116,11 @@ namespace Microsoft.Exchange.WebServices.Data
         /// the latest supported version of EWS and scoped to the specified time zone.
         /// </summary>
         /// <param name="timeZone">The time zone to which the service is scoped.</param>
-        public ExchangeService(TimeZoneInfo timeZone)
+        /// <param name="ignoreCertificate">Ignore server certificate error.</param>
+        public ExchangeService(TimeZoneInfo timeZone, bool ignoreCertificate = false)
             : base(timeZone)
         {
+            this.IgnoreCertificate = ignoreCertificate;
         }
 
         /// <summary>
@@ -5126,9 +5128,11 @@ namespace Microsoft.Exchange.WebServices.Data
         /// the specified version of EWS and scoped to the system's current time zone.
         /// </summary>
         /// <param name="requestedServerVersion">The version of EWS that the service targets.</param>
-        public ExchangeService(ExchangeVersion requestedServerVersion)
+        /// <param name="ignoreCertificate">Ignore server certificate error.</param>
+        public ExchangeService(ExchangeVersion requestedServerVersion, bool ignoreCertificate = false)
             : base(requestedServerVersion)
         {
+            this.IgnoreCertificate = ignoreCertificate;
         }
 
         /// <summary>
@@ -5137,9 +5141,11 @@ namespace Microsoft.Exchange.WebServices.Data
         /// </summary>
         /// <param name="requestedServerVersion">The version of EWS that the service targets.</param>
         /// <param name="timeZone">The time zone to which the service is scoped.</param>
-        public ExchangeService(ExchangeVersion requestedServerVersion, TimeZoneInfo timeZone)
+        /// <param name="ignoreCertificate">Ignore server certificate error.</param>
+        public ExchangeService(ExchangeVersion requestedServerVersion, TimeZoneInfo timeZone, bool ignoreCertificate = false)
             : base(requestedServerVersion, timeZone)
         {
+            this.IgnoreCertificate = ignoreCertificate;
         }
 
         /// <summary>

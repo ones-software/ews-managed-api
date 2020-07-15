@@ -51,15 +51,79 @@ namespace Microsoft.Exchange.WebServices.Data
         /// Initializes a new instance of the <see cref="EwsHttpWebRequest"/> class.
         /// </summary>
         /// <param name="uri">The URI.</param>
-        internal EwsHttpWebRequest(Uri uri)
+        /// <param name="ignoreCertificate">Ignore server certificate not trust error</param>
+        internal EwsHttpWebRequest(Uri uri, bool ignoreCertificate)
         {
             Method = "GET";
             RequestUri = uri;
             _httpClientHandler = new HttpClientHandler() {
                 AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip
             };
+            if (ignoreCertificate)
+            {
+                _httpClientHandler.ServerCertificateCustomValidationCallback =
+                    ServerCertificateCustomValidationCallback;
+            }
             _httpClient = new HttpClient(_httpClientHandler);
         }
+
+
+        /// <summary>
+        /// from https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-validate-a-server-certificate-for-the-ews-managed-api
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="certificate"></param>
+        /// <param name="chain"></param>
+        /// <param name="sslPolicyErrors"></param>
+        /// <returns></returns>
+        internal static bool ServerCertificateCustomValidationCallback(HttpRequestMessage message, X509Certificate2 certificate,
+            X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            // If the certificate is a valid, signed certificate, return true.
+            if (sslPolicyErrors == SslPolicyErrors.None)
+            {
+                return true;
+            }
+
+            // If there are errors in the certificate chain, look at each error to determine the cause.
+            if ((sslPolicyErrors & SslPolicyErrors.RemoteCertificateChainErrors) != 0)
+            {
+                if (chain != null && chain.ChainStatus != null)
+                {
+                    foreach (X509ChainStatus status in chain.ChainStatus)
+                    {
+                        if ((certificate.Subject == certificate.Issuer) &&
+                            (status.Status == X509ChainStatusFlags
+                                .UntrustedRoot))
+                        {
+                            // Self-signed certificates with an untrusted root are valid. 
+                            continue;
+                        }
+                        else
+                        {
+                            if (status.Status != X509ChainStatusFlags
+                                .NoError)
+                            {
+                                // If there are any other errors in the certificate chain, the certificate is invalid,
+                                // so the method returns false.
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+                // When processing reaches this line, the only errors in the certificate chain are 
+                // untrusted root errors for self-signed certificates. These certificates are valid
+                // for default Exchange server installations, so return true.
+                return true;
+            }
+            else
+            {
+                // In all other cases, return false.
+                return false;
+            }
+        }
+
 
         #region IEwsHttpWebRequest Members
 
@@ -288,4 +352,6 @@ namespace Microsoft.Exchange.WebServices.Data
 
         #endregion
     }
+
+    
 }
